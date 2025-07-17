@@ -1,4 +1,67 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- Animated Git Branch Lines Background ---
+  const canvas = document.getElementById('git-branches-bg');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Branch line data
+    const branches = [];
+    const branchCount = 7;
+    for (let i = 0; i < branchCount; i++) {
+      branches.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        speed: 0.2 + Math.random() * 0.3,
+        color: i % 2 === 0 ? '#b6e94a' : '#7bb800',
+        points: Array.from({length: 8}, (_, j) => ({
+          dx: (Math.random() - 0.5) * 40,
+          dy: (Math.random() - 0.5) * 40
+        }))
+      });
+    }
+
+    function drawBranches() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      branches.forEach(branch => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(branch.x, branch.y);
+        let px = branch.x, py = branch.y;
+        branch.points.forEach((pt, idx) => {
+          px += pt.dx;
+          py += pt.dy;
+          ctx.lineTo(px, py);
+        });
+        ctx.strokeStyle = branch.color;
+        ctx.lineWidth = 2.5;
+        ctx.globalAlpha = 0.18;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      });
+    }
+
+    function animate() {
+      // Animate branch points
+      branches.forEach(branch => {
+        branch.points.forEach(pt => {
+          pt.dx += (Math.random() - 0.5) * 0.7;
+          pt.dy += (Math.random() - 0.5) * 0.7;
+          pt.dx = Math.max(-60, Math.min(60, pt.dx));
+          pt.dy = Math.max(-60, Math.min(60, pt.dy));
+        });
+      });
+      drawBranches();
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
   const activitiesList = document.getElementById("activities-list");
   const activitySelect = document.getElementById("activity");
   const signupForm = document.getElementById("signup-form");
